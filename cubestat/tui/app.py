@@ -6,7 +6,6 @@ from typing import Optional
 
 from cubestat.common import DisplayMode
 from cubestat.data import DataManager
-from cubestat.http_server import HTTPMetricsServer
 from cubestat.metrics_registry import get_metrics
 from cubestat.prometheus_server import PrometheusServer
 from cubestat.tui.colors import ColorTheme, get_theme
@@ -42,15 +41,7 @@ class Cubestat:
 
         self.input_handler = InputHandler(self)
         self.data_manager = DataManager(args.buffer_size)
-        
-        # Initialize HTTP server if requested
-        self.http_server: Optional[HTTPMetricsServer] = None
-        if hasattr(args, 'http_port') and args.http_port:
-            self.http_server = HTTPMetricsServer(
-                args.http_host, args.http_port, self.data_manager, self.refresh_ms
-            )
-            self.http_server.start()
-        
+
         # Initialize Prometheus server if requested
         self.prometheus_server: Optional[PrometheusServer] = None
         if hasattr(args, 'prometheus_port') and args.prometheus_port:
@@ -132,22 +123,14 @@ class Cubestat:
                 row += 2
             
             # Render status line at the bottom
-            endpoints = []
-            if self.http_server:
-                json_url = f"JSON: http://{self.http_server.host}:{self.http_server.port}/metrics"
-                endpoints.append(json_url)
+            prom_url = None
             if self.prometheus_server:
                 prom_url = f"Prometheus: http://localhost:{self.prometheus_server.port}/metrics"
-                endpoints.append(prom_url)
-            
-            endpoint_str = " | ".join(endpoints) if endpoints else None
-            self.screen.render_status(endpoint_str, self.refresh_ms, self.screen.rows - 1)
+            self.screen.render_status(prom_url, self.refresh_ms, self.screen.rows - 1)
         self.screen.render_done()
 
     def cleanup(self) -> None:
         """Clean up resources when shutting down."""
-        if self.http_server:
-            self.http_server.stop()
         if self.prometheus_server:
             self.prometheus_server.stop()
 

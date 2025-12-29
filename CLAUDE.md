@@ -12,10 +12,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Format: `ruff format cubestat`
 - Run TUI mode: `python -m cubestat.cubestat`
 - Run CSV export: `python -m cubestat.cubestat --csv`
-- Run with HTTP server: `python -m cubestat.cubestat --http-port 8080`
-- Run with HTTP server on specific host: `python -m cubestat.cubestat --http-port 8080 --http-host 0.0.0.0`
 - Run with Prometheus metrics export: `python -m cubestat.cubestat --prometheus-port 9090`
-- Run with both HTTP and Prometheus: `python -m cubestat.cubestat --http-port 8080 --prometheus-port 9090`
 
 ## Code Style
 - File/function/variable naming: snake_case (e.g., `data_manager.py`, `get_metrics`)
@@ -64,8 +61,6 @@ Raw System   component.type.     Process &   TUI Chart
    Data      instance.attr.unit   Format     CSV Output
     ↓
 Prometheus Gauges (double-write)
-    ↓
-HTTP /metrics endpoint
 ```
 
 ### Current Architecture Structure
@@ -92,23 +87,15 @@ cubestat/metrics/all_metrics.py           # Configuration-driven metric definiti
 
 **CSV Export Mode (`--csv`)**:
 - Non-interactive streaming CSV output to stdout
-- Outputs standardized metric names directly for scripting/analysis  
+- Outputs standardized metric names directly for scripting/analysis
 - Perfect for monitoring systems, scripts, and data analysis
 - Format: `timestamp,metric,value`
 - Example: `1750693377.593887,cpu.performance.0.core.0.utilization.percent,26.7591`
 
-**HTTP Server Mode (`--http-port PORT`)**:
-- Enables HTTP server on specified port (requires TUI mode)
-- Serves JSON metrics at `/metrics` endpoint
-- Compatible with TUI mode - provides real-time access to same data displayed in terminal
-- Optional `--http-host HOST` (default: localhost, use 0.0.0.0 for external access)
-- Returns JSON with current values and historical data for each metric
-- Cannot be combined with `--csv` mode
-
 **Prometheus Metrics Mode (`--prometheus-port PORT`)**:
 - Enables Prometheus metrics exporter on specified port
 - Serves metrics in Prometheus format at `/metrics` endpoint
-- Compatible with TUI mode and HTTP server mode
+- Compatible with TUI mode
 - Metrics include labels for multi-dimensional data (e.g., CPU core, cluster type, GPU vendor)
 - Cannot be combined with `--csv` mode
 - **Complete collector coverage**: All system collectors export Prometheus metrics

@@ -41,8 +41,7 @@ or
 
 ```
 usage: cubestat [-h] [--refresh_ms REFRESH_MS] [--buffer_size BUFFER_SIZE]
-                [--view {off,one,all}] [--csv] [--http-port HTTP_PORT]
-                [--http-host HTTP_HOST] [--prometheus-port PROMETHEUS_PORT]
+                [--view {off,one,all}] [--csv] [--prometheus-port PROMETHEUS_PORT]
                 [--cpu {all,by_cluster,by_core}] [--network {show,hide}]
                 [--gpu {collapsed,load_only,load_and_vram}]
                 [--disk {show,hide}] [--swap {show,hide}]
@@ -56,10 +55,6 @@ options:
                         Number of datapoints to store. Consider larger values for window resizing.
   --view {off,one,all}  Display mode (legend, values, time). Hotkey: "v".
   --csv                 Export metrics in CSV format to stdout (bypasses TUI)
-  --http-port HTTP_PORT
-                        Enable HTTP server on specified port to serve metrics as JSON
-  --http-host HTTP_HOST
-                        HTTP server host (default: localhost)
   --prometheus-port PROMETHEUS_PORT
                         Enable Prometheus metrics exporter on specified port
   --cpu {all,by_cluster,by_core}
@@ -156,9 +151,6 @@ cubestat provides native Prometheus metrics export for seamless integration with
 # Start with Prometheus metrics on port 9090
 cubestat --prometheus-port 9090
 
-# Combine with TUI and HTTP JSON endpoint
-cubestat --prometheus-port 9090 --http-port 8080
-
 # Custom refresh rate
 cubestat --prometheus-port 9090 --refresh_ms 500
 ```
@@ -205,20 +197,6 @@ gpu_usage_percent{vendor="nvidia"}
 # Power consumption by component
 sum(power_consumption_watts) by (component)
 ```
-
-## HTTP JSON API
-
-cubestat can also serve metrics via HTTP JSON API for programmatic access:
-
-```bash
-# Start HTTP server on port 8080
-cubestat --http-port 8080
-
-# Access metrics
-curl http://localhost:8080/metrics
-```
-
-The JSON API provides current values and historical data for all metrics, perfect for custom dashboards and monitoring solutions.
 
 ## Notes and examples
 
