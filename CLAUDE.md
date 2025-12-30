@@ -11,7 +11,6 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Lint: `ruff check cubestat`
 - Format: `ruff format cubestat`
 - Run TUI mode: `python -m cubestat.cubestat`
-- Run CSV export: `python -m cubestat.cubestat --csv`
 - Run headless Prometheus exporter: `python -m cubestat.cubestat --prometheus-port 9090`
 - Run TUI with Prometheus: `python -m cubestat.cubestat --prometheus-port 9090 --tui`
 
@@ -56,10 +55,10 @@ All metrics follow the simplified collector/presenter architecture with standard
 
 ### Data Flow
 ```
-Collector → Standardized Names → Presenter → Display
-    ↓              ↓                  ↓         ↓
-Raw System   component.type.     Process &   TUI Chart
-   Data      instance.attr.unit   Format     CSV Output
+Collector → Standardized Names → Presenter → TUI Display
+    ↓              ↓                  ↓
+Raw System   component.type.     Process &
+   Data      instance.attr.unit   Format
     ↓
 Prometheus Gauges (double-write)
 ```
@@ -86,20 +85,12 @@ cubestat/metrics/all_metrics.py           # Configuration-driven metric definiti
 - Presenters transform standardized names to display-friendly format
 - Requires curses and 256-color terminal
 
-**CSV Export Mode (`--csv`)**:
-- Non-interactive streaming CSV output to stdout
-- Outputs standardized metric names directly for scripting/analysis
-- Perfect for monitoring systems, scripts, and data analysis
-- Format: `timestamp,metric,value`
-- Example: `1750693377.593887,cpu.performance.0.core.0.utilization.percent,26.7591`
-
 **Prometheus Metrics Mode (`--prometheus-port PORT`)**:
 - Runs headless by default - no TUI, just collects metrics for Prometheus
 - Serves metrics in Prometheus format at `/metrics` endpoint
 - Add `--tui` flag to show TUI charts alongside Prometheus export
 - Prints periodic stats (collection count) to stdout
 - Metrics include labels for multi-dimensional data (e.g., CPU core, cluster type, GPU vendor)
-- Cannot be combined with `--csv` mode
 - **Complete collector coverage**: All system collectors export Prometheus metrics
   - **ANE**: `ane_usage_percent` - Apple Neural Engine utilization
   - **CPU**: `cpu_usage_percent` - Per-core utilization with cluster labels

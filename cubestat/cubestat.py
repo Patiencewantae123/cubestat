@@ -4,7 +4,6 @@ import argparse
 import curses
 import logging
 
-from cubestat.csv.exporter import csv_export
 from cubestat.metrics_registry import metrics_configure_argparse
 from cubestat.platforms.factory import get_platform
 from cubestat.tui.app import ViewMode, start
@@ -33,10 +32,6 @@ def main():
     )
 
     parser.add_argument(
-        "--csv", action="store_true", help="Export metrics in CSV format to stdout (bypasses TUI)"
-    )
-
-    parser.add_argument(
         "--prometheus-port", type=int, help="Enable Prometheus metrics exporter on specified port"
     )
 
@@ -49,14 +44,8 @@ def main():
 
     platform = get_platform(args.refresh_ms)
 
-    # Validate argument combinations
-    if args.csv and hasattr(args, 'prometheus_port') and args.prometheus_port:
-        parser.error("--csv and --prometheus-port cannot be used together")
-
     # Mode selection
-    if args.csv:
-        csv_export(platform, args)
-    elif args.prometheus_port:
+    if args.prometheus_port:
         if args.tui:
             # TUI + Prometheus
             curses.wrapper(start, platform, args)
