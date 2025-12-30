@@ -12,7 +12,8 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 - Format: `ruff format cubestat`
 - Run TUI mode: `python -m cubestat.cubestat`
 - Run CSV export: `python -m cubestat.cubestat --csv`
-- Run with Prometheus metrics export: `python -m cubestat.cubestat --prometheus-port 9090`
+- Run headless Prometheus exporter: `python -m cubestat.cubestat --prometheus-port 9090`
+- Run TUI with Prometheus: `python -m cubestat.cubestat --prometheus-port 9090 --tui`
 
 ## Code Style
 - File/function/variable naming: snake_case (e.g., `data_manager.py`, `get_metrics`)
@@ -93,9 +94,10 @@ cubestat/metrics/all_metrics.py           # Configuration-driven metric definiti
 - Example: `1750693377.593887,cpu.performance.0.core.0.utilization.percent,26.7591`
 
 **Prometheus Metrics Mode (`--prometheus-port PORT`)**:
-- Enables Prometheus metrics exporter on specified port
+- Runs headless by default - no TUI, just collects metrics for Prometheus
 - Serves metrics in Prometheus format at `/metrics` endpoint
-- Compatible with TUI mode
+- Add `--tui` flag to show TUI charts alongside Prometheus export
+- Prints periodic stats (collection count) to stdout
 - Metrics include labels for multi-dimensional data (e.g., CPU core, cluster type, GPU vendor)
 - Cannot be combined with `--csv` mode
 - **Complete collector coverage**: All system collectors export Prometheus metrics

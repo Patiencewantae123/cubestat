@@ -42,7 +42,7 @@ or
 ```
 usage: cubestat [-h] [--refresh_ms REFRESH_MS] [--buffer_size BUFFER_SIZE]
                 [--view {off,one,all}] [--csv] [--prometheus-port PROMETHEUS_PORT]
-                [--cpu {all,by_cluster,by_core}] [--network {show,hide}]
+                [--tui] [--cpu {all,by_cluster,by_core}] [--network {show,hide}]
                 [--gpu {collapsed,load_only,load_and_vram}]
                 [--disk {show,hide}] [--swap {show,hide}]
                 [--memory {percent,all}] [--power {combined,all,off}]
@@ -56,7 +56,8 @@ options:
   --view {off,one,all}  Display mode (legend, values, time). Hotkey: "v".
   --csv                 Export metrics in CSV format to stdout (bypasses TUI)
   --prometheus-port PROMETHEUS_PORT
-                        Enable Prometheus metrics exporter on specified port
+                        Enable Prometheus metrics exporter on specified port (runs headless by default)
+  --tui                 Show TUI charts (use with --prometheus-port for both)
   --cpu {all,by_cluster,by_core}
                         Select CPU mode: all cores, cumulative by cluster, or both. Hotkey: "c".
   --network {show,hide}
@@ -145,14 +146,27 @@ cubestat --csv | grep "memory.system.total.used.percent" | tail -f
 
 ## Prometheus Metrics Export
 
-cubestat provides native Prometheus metrics export for seamless integration with Prometheus monitoring systems:
+cubestat provides native Prometheus metrics export for seamless integration with Prometheus monitoring systems. When `--prometheus-port` is specified, cubestat runs in headless mode by default (no TUI):
 
 ```bash
-# Start with Prometheus metrics on port 9090
+# Headless Prometheus exporter (default)
 cubestat --prometheus-port 9090
 
 # Custom refresh rate
 cubestat --prometheus-port 9090 --refresh_ms 500
+
+# TUI + Prometheus (show charts alongside metrics export)
+cubestat --prometheus-port 9090 --tui
+```
+
+In headless mode, cubestat prints periodic collection stats to stdout:
+```
+Prometheus metrics: http://localhost:9090/metrics
+Refresh interval: 1000ms
+Press Ctrl+C to stop
+
+[10.0s] Collections: 10
+[20.0s] Collections: 20
 ```
 
 ### Prometheus Metrics Available

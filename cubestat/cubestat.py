@@ -40,6 +40,10 @@ def main():
         "--prometheus-port", type=int, help="Enable Prometheus metrics exporter on specified port"
     )
 
+    parser.add_argument(
+        "--tui", action="store_true", help="Show TUI charts (use with --prometheus-port for both)"
+    )
+
     metrics_configure_argparse(parser)
     args = parser.parse_args()
 
@@ -49,9 +53,19 @@ def main():
     if args.csv and hasattr(args, 'prometheus_port') and args.prometheus_port:
         parser.error("--csv and --prometheus-port cannot be used together")
 
+    # Mode selection
     if args.csv:
         csv_export(platform, args)
+    elif args.prometheus_port:
+        if args.tui:
+            # TUI + Prometheus
+            curses.wrapper(start, platform, args)
+        else:
+            # Headless Prometheus only (default when --prometheus-port given)
+            from cubestat.prometheus.exporter import prometheus_export
+            prometheus_export(platform, args)
     else:
+        # Plain TUI (default)
         curses.wrapper(start, platform, args)
 
 
