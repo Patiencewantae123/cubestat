@@ -2,7 +2,7 @@
 
 __version__ = "0.3.4"
 
-from cubestat.logging import configure_logging
+from cubestat.cubestat_logging import configure_logging
 
 # Initialize default logging configuration
 configure_logging()
